@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.line9 {
+  width: 1px;
+    height: 100%;
+    background-color:rgb(252, 213, 53) !important; 
+    
+}
+
+.bg-blur{
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(5px);
+}
+
+.btn-green{
+  display: inline-block;
+  color: white;
+  font-family: 'Montserrat Alternates', sans-serif;
+  height: 52px;
+  line-height: 52px;
+  padding: 0 30px;
+  font-weight: 600;
+  font-size: 16px;
+  text-align: center;
+  letter-spacing: -0.02em;
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  z-index: 1;
+  transition: 0.5s;
+  background: linear-gradient(180deg, #B1FF36 -23%, #1D863C 100%);
+  box-shadow: 0px 2px 3px rgba(3, 22, 3, 0.2);
+  border-radius: 10px;
+}
+
+
+  .absolute.inset-0.flex.h-full.w-full.items-center.justify-center.uppercase.text-white{
+  display: flex;
+   justify-content: space-around;
+    padding-top: 0px;
+}
+@media only screen and (max-width: 492px) {
+.line9 {
+    display: none;
+}
+}
+
+.text-gradient {
+  background: linear-gradient(#f320d8 0%, #16a6ee 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+
+@layer base {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+body {
+  @apply flex min-h-screen flex-col;
+  background-color : transparent;
+}
+
+.swiper-wrapper {
+  @apply items-center lg:justify-between;
+}
+
+.gradient-border {
+  @apply relative;
+}
+
+.gradient-border::before {
+  @apply absolute inset-0 rounded-2xl p-0.5 transition-all duration-300;
+  content: "";
+  background: linear-gradient(
+    160deg,
+    #3e1f5e 20%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.gradient-border:hover::before {
+  @apply p-1;
+  background: linear-gradient(160deg, #3e1f5e 0%, #3e1f5e 100%);
+}
