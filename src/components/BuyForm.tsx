@@ -113,9 +113,7 @@ const BuyForm = () => {
     setToValue("");
   };
 
-  const submit = async (event: SyntheticEvent) => {
-    event.preventDefault();
-
+  const onSubmit = async (event: SyntheticEvent) => {
     try {
       if (saleStatus) {
         if (+fromValue === 0) return;
@@ -184,7 +182,7 @@ const BuyForm = () => {
           <p className="my-2 text-xl font-bold">Unlocking your tokens</p>
         )}
       </div>
-      <form onSubmit={submit} className="mb-4 flex flex-col gap-3 px-4">
+      <form className="mb-4 flex flex-col gap-3 px-4">
         <div className="relative mt-2 mb-4 flex flex-col items-center justify-center">
           <hr className="absolute top-1 h-0.5 w-full bg-gray-400" />
           <span className="z-10 -mt-2 bg-[#42474B] px-4 font-bold text-white">
@@ -302,8 +300,11 @@ const BuyForm = () => {
                     className="relative flex w-full items-center justify-center gap-2 rounded-lg bg-[#FFD700] py-3 px-6 text-lg  btn-green transition-opacity duration-200 hover:opacity-75 disabled:cursor-not-allowed disabled:from-gray-400 disabled:opacity-80 lg:text-xl"
                     disabled={loading || insufficientBalance}
                     type="submit"
-                    onClick={()=>{ window.gtag('event', 'BuyClick', { event_category: 'button',
-                    event_label: 'Buy'}); return true; }}
+                    onClick={(e: SyntheticEvent<HTMLButtonElement>)=>{ window.gtag('event', 'BuyClick', { event_category: 'button',
+                    event_label: 'Buy'}
+                    );
+                    onSubmit(e);
+                  return true; }}
                   >
                     {loading && (
                       <svg

@@ -25,6 +25,7 @@ specifiers:
   framer-motion: ^11.0.14
   i18next: ^23.10.1
   react: ^18.2.0
+  react-countdown: ^2.3.5
   react-dom: ^18.2.0
   react-i18next: ^14.1.0
   react-redux: ^9.1.0
@@ -56,6 +57,7 @@ dependencies:
   framer-motion: 11.0.14_biqbaboplfbrettd7655fr4n2y
   i18next: 23.10.1
   react: 18.2.0
+  react-countdown: 2.3.5
   react-dom: 18.2.0_react@18.2.0
   react-i18next: 14.1.0_7a5hznwdpdzuvqpxb6t6vb3lom
   react-redux: 9.1.0_zmht6lurnl66xpcbybuy5gpuey
@@ -5024,6 +5026,14 @@ packages:
     resolution: {integrity: sha512-du4wfLyj4yCZq1VupnVSZmRsPJsNuxoDQFdCFHLaYiEbFBD7QE0a+I4D7hOxrVnh78QE/YipFAj9lXHiXocV+Q==}
     dev: false
 
+  /prop-types/15.8.1:
+    resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
+    dependencies:
+      loose-envify: 1.4.0
+      object-assign: 4.1.1
+      react-is: 16.13.1
+    dev: false
+
   /proxy-compare/2.5.1:
     resolution: {integrity: sha512-oyfc0Tx87Cpwva5ZXezSp5V9vht1c7dZBhvuV/y3ctkgMVUmiAGDVeeB0dKhGSyT0v1ZTEQYpe/RXlBVBNuCLA==}
     dev: false
@@ -5089,6 +5099,15 @@ packages:
 
   /radix3/1.1.1:
     resolution: {integrity: sha512-yUUd5VTiFtcMEx0qFUxGAv5gbMc1un4RvEO1JZdP7ZUl/RHygZK6PknIKntmQRZxnMY3ZXD2ISaw1ij8GYW1yg==}
+    dev: false
+
+  /react-countdown/2.3.5:
+    resolution: {integrity: sha512-K26ENYEesMfPxhRRtm1r+Pf70SErrvW3g4CArLi/x6MPFjgfDFYePT4UghEj8p2nI0cqVV7/JjDgjyr//U60Og==}
+    peerDependencies:
+      react: '>= 15'
+      react-dom: '>= 15'
+    dependencies:
+      prop-types: 15.8.1
     dev: false
 
   /react-dom/18.2.0_react@18.2.0:
