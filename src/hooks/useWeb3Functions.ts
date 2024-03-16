@@ -68,6 +68,7 @@ const useWeb3Functions = () => {
       fetchTokenPrices(),
     ]);
 
+    
     saleStatus && dispatch(setSaleStatus(saleStatus));
 
     setLoading(false);
@@ -116,7 +117,7 @@ const useWeb3Functions = () => {
   };
 
   const fetchTokenBalances = async () => {
-    if (!address) return;
+    if (!address || !tokens[chain.id]) return;
 
     const balances = await Promise.all(
       tokens[chain.id].map((token) => {

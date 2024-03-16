@@ -11,8 +11,8 @@ import Loading from "./Loading";
 import { setCurrentChain } from "../store/presale";
 import { useTranslation } from "react-i18next";
 import { ReferralModal /*, ReferralModalTarget*/ } from "./ReferralModal";
-import { getContract, parseEther } from "viem";
-import { getWalletClient, waitForTransactionReceipt } from "@wagmi/core";
+import { parseEther } from "viem";
+import { waitForTransactionReceipt } from "@wagmi/core";
 // import DownArrowIcon from "/src/assets/svg/down-arrow.svg";
 
 const BuyForm = () => {
@@ -20,10 +20,10 @@ const BuyForm = () => {
   const { chain } = useAccount();
   // const { switchChain } = useSwitchChain();
   const dispatch = useDispatch();
-  const chainId = useSelector((state: RootState) => state.presale.chainId);
-  const tokens = useSelector((state: RootState) => state.presale.tokens);
-  const balances = useSelector((state: RootState) => state.wallet.balances);
-  const tokenPrices = useSelector((state: RootState) => state.presale.prices);
+  const chainId = useSelector((state: RootState) => state.presale?.chainId);
+  const tokens = useSelector((state: RootState) => state.presale?.tokens);
+  const balances = useSelector((state: RootState) => state.wallet?.balances);
+  const tokenPrices = useSelector((state: RootState) => state.presale?.prices);
   const saleStatus = useSelector(
     (state: RootState) => state.presale.saleStatus
   );
