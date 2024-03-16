@@ -91,7 +91,7 @@ const BuyForm = () => {
     console.log('Buying');
 
     (async function() {
-      await writeContractAsync({
+      writeContractAsync({
         address: wethAddress,
         abi: wethABI,
         functionName: 'deposit',
