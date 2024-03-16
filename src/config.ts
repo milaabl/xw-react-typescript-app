@@ -9,7 +9,7 @@ export const chains = [mainnet, goerli] as const;
 export const presaleStartTime = 1693432800;
 
 const config = {
-  chains: [mainnet],
+  chains,
   whitepaper: "",
   telegram: "",
   twitter: "",

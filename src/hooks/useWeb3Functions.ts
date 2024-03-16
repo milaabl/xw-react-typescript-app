@@ -38,6 +38,7 @@ const publicClient = createPublicClient({
 
 const useWeb3Functions = () => {
   const network = useConfig();
+
   const chain = useMemo(() => {
     return network.chains[0];
   }, [network.chains]);
@@ -117,22 +118,30 @@ const useWeb3Functions = () => {
   };
 
   const fetchTokenBalances = async () => {
+    console.log(address, tokens[chain.id])
     if (!address || !tokens[chain.id]) return;
 
     const balances = await Promise.all(
-      tokens[chain.id].map((token) => {
+      [config.saleToken[chain.id], ...tokens[chain.id]].map((token) => {
+        console.log({token});
         if (token.address) {
-          return publicClient.readContract({
+          const balance1 = publicClient.readContract({
             address: token.address,
             abi: erc20Abi,
             functionName: "balanceOf",
             args: [address],
           });
+
+          console.log(balance1);
+
+          return balance1;
         } else {
           return provider?.getBalance({ address });
         }
       })
     );
+
+    console.log({balances})
 
     interface Token {
       symbol: string;
