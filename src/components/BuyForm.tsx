@@ -3,21 +3,22 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
 import config from "../config";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
-import { useAccount,useBlockNumber,useClient,useConfig,/*, useSwitchChain*/ 
-useWalletClient,
-useWriteContract} from "wagmi";
+import { useAccount,
+  useReadContract
+  /*, useSwitchChain*/ 
+} from "wagmi";
 import useWeb3Functions from "../hooks/useWeb3Functions";
 import Loading from "./Loading";
 import { setCurrentChain } from "../store/presale";
 import { useTranslation } from "react-i18next";
 import { ReferralModal /*, ReferralModalTarget*/ } from "./ReferralModal";
-import { parseEther } from "viem";
-import { waitForTransactionReceipt } from "@wagmi/core";
+import { zeroAddress } from "viem";
+import { presaleAbi } from "../contracts/presaleABI";
 // import DownArrowIcon from "/src/assets/svg/down-arrow.svg";
 
 const BuyForm = () => {
   const { t } = useTranslation();
-  const { chain } = useAccount();
+  const { address: account, chain } = useAccount();
 
   const [chainId] = useMemo(() => [chain?.id || 1], [chain]);
 
@@ -36,12 +37,11 @@ const BuyForm = () => {
   const totalTokensForSale = config.stage.total;
 
   const tokenBalance = useSelector((state: RootState) => state.wallet.balances);
+
   const saleToken = config.saleToken;
 
   const [isReferralModalOpen, setIsReferralModalOpen] = useState(false);
   // const ToggleReferral = () => setIsReferralModalOpen(!isReferralModalOpen);
-
-    console.log({saleToken})
 
   const [fromToken, setFromToken] = useState<Token>(tokens[chainId][0]);
   const [toToken/*, setToToken*/] = useState<Token>(
@@ -56,6 +56,7 @@ const BuyForm = () => {
     fetchIntialData,
     fetchLockedBalance,
     fetchTokenBalances,
+    fetchTokenPrices,
     unlockingTokens,
     loading,
   } = useWeb3Functions();
@@ -64,14 +65,10 @@ const BuyForm = () => {
 
   const { address, isConnected } = useAccount();
 
-  const tokenPrice = useMemo(
-    () => tokenPrices[config.displayPrice[chainId]] || 0,
-    [tokenPrices]
-  );
-
-  const { writeContractAsync } = useWriteContract();
-
-  const clientConfig = useConfig();
+  /*const tokenPrice = useMemo(
+    () => tokenPrices[config.displayPrice[chainId]],
+    [tokenPrices, fromToken]
+  );*/
 
   const soldPercentage = useMemo(
     () =>
@@ -85,8 +82,6 @@ const BuyForm = () => {
   const formatNumber = (num: number) =>
     Intl.NumberFormat().format(fixedNumber(num, 2));
 
-    console.log(balances, toToken, balances[toToken.symbol]);
-
   const lockedToken = useMemo(
     () => formatNumber(balances[toToken.symbol]),
     [balances]
@@ -95,20 +90,32 @@ const BuyForm = () => {
   const insufficientBalance = useMemo(() => {
     if (!fromValue) return false;
     return +fromValue > tokenBalance[fromToken.symbol];
-  }, [fromValue, tokenBalance]);
+  }, [fromValue, tokenBalance, fromToken]);
 
   const fromValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+
+    // console.log(value);
+
     if (!value) {
       emptyValues();
       return;
     }
 
-    setFromValue(fixedNumber(+value));
+    setFromValue(fixedNumber(+(value)));
+
+    // console.log(tokenPrices);
+
     if (tokenPrices[fromToken.symbol] !== 0) {
       setToValue(fixedNumber(+value / tokenPrices[fromToken.symbol], 4));
     }
   };
+
+  useEffect(() => {
+    if (tokenPrices[fromToken.symbol] !== 0) {
+      setToValue(fixedNumber(+fromValue / tokenPrices[fromToken.symbol], 4));
+    }
+  }, [fromToken]);
 
   const toValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -128,12 +135,28 @@ const BuyForm = () => {
     setToValue("");
   };
 
-  const onSubmit = async (event: SyntheticEvent) => {
+  // Keeping track of the current session buy operations may be useful for the UX
+  const [/*hasBought*/, setBought] = useState<boolean>(false);
+
+  const { data : boughtToken } = useReadContract({
+    address: config.presaleContract[chainId],
+    abi: presaleAbi,
+    args: [account || zeroAddress],
+    functionName: 'buyersDetails',
+    query: {
+      enabled: true,
+      gcTime: 5 * 1000 // 5s
+    }
+  })
+
+  const onSubmit = async (/*event: SyntheticEvent*/) => {
     try {
       if (saleStatus) {
         if (+fromValue === 0) return;
 
         await buyToken(fromValue, fromToken);
+
+        setBought(true);
         emptyValues();
         window.gtag('event', 'conversion', { event_category: 'conversion',
               event_label: 'buy token'})
@@ -147,19 +170,28 @@ const BuyForm = () => {
 
   useEffect(() => {
     if (!address || !chain) return;
+
     fetchLockedBalance();
     fetchTokenBalances();
-  }, [address, chain]);
+  }, [tokens, address, chain, fromToken, fromValue]);
 
   useEffect(() => {
     if (!isConnected || !chain) return;
     
     dispatch(setCurrentChain(chain.id as number));
-  }, [isConnected]);
+  }, [chain, isConnected]);
 
   useEffect(() => {
-    fetchIntialData();
-  }, []);
+    // console.log('Fetch token prices...');
+    (async function () {
+      await Promise.allSettled([
+        fetchIntialData(),
+        fetchTokenPrices(),
+        fetchTokenBalances(),
+        fetchLockedBalance()
+      ]);
+    })();
+  }, [address]);
 
   return (
     <div className="relative mx-auto w-full max-w-lg self-stretch rounded-3xl bg-blur  shadow-xl" >
@@ -307,6 +339,10 @@ const BuyForm = () => {
               </div>
               {isConnected ? (
                 <>
+                  { boughtToken && boughtToken[0] && <p className="uppercase col-span-2 border-y py-4 text-center text-sm font-medium uppercase text-white">
+                    You bought {boughtToken[0].toLocaleString()} $
+                    {saleToken[chainId].symbol}{" in total"}
+                  </p> }
                   <p className="col-span-2 border-y py-4 text-center text-sm font-medium uppercase text-white">
                     YOUR AMOUNT {lockedToken} $
                     {saleToken[chainId].symbol} Locked{" "}
@@ -318,7 +354,7 @@ const BuyForm = () => {
                     onClick={(e: SyntheticEvent<HTMLButtonElement>)=>{ window.gtag('event', 'BuyClick', { event_category: 'button',
                     event_label: 'Buy'}
                     );
-                    onSubmit(e);
+                    onSubmit(/*e*/);
                   return true; }}
                   >
                     {loading && (

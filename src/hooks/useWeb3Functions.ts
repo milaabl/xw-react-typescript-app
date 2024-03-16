@@ -7,7 +7,7 @@ import {
   // setTotalTokensforSale,
   setTotalTokensSold,
 } from "../store/presale";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   useAccount,
   useConfig,
@@ -57,11 +57,18 @@ const useWeb3Functions = () => {
         abi: presaleAbi,
         client: walletClient
       }),
-    [walletClient, chain.id]
+    [address, walletClient, chain.id]
   );
 
+  useEffect(() => {
+    fetchIntialData();
+  }, [presaleContract]);
+
   const fetchIntialData = async () => {
+    // console.log('Fethcing initial data...')
     setLoading(true);
+
+    // console.log(presaleContract)
 
     const [saleStatus] = await Promise.all([
       presaleContract?.read.saleStatus(),
@@ -69,7 +76,6 @@ const useWeb3Functions = () => {
       fetchTokenPrices(),
     ]);
 
-    
     saleStatus && dispatch(setSaleStatus(saleStatus));
 
     setLoading(false);
@@ -118,21 +124,19 @@ const useWeb3Functions = () => {
   };
 
   const fetchTokenBalances = async () => {
-    console.log(address, tokens[chain.id])
     if (!address || !tokens[chain.id]) return;
 
+    const allTokens = [...tokens[chain.id], config.saleToken[chain.id]];
+
     const balances = await Promise.all(
-      [config.saleToken[chain.id], ...tokens[chain.id]].map((token) => {
-        console.log({token});
+      allTokens.map(async (token) => {
         if (token.address) {
-          const balance1 = publicClient.readContract({
+          const balance1 = await publicClient.readContract({
             address: token.address,
             abi: erc20Abi,
             functionName: "balanceOf",
             args: [address],
           });
-
-          console.log(balance1);
 
           return balance1;
         } else {
@@ -140,15 +144,13 @@ const useWeb3Functions = () => {
         }
       })
     );
-
-    console.log({balances})
-
+  
     interface Token {
       symbol: string;
       decimals: number;
     }
 
-    tokens[chain.id].forEach((token: Token, index) => {
+    allTokens.forEach((token: Token, index) => {
       dispatch(
         setBalance({
           symbol: token.symbol,
@@ -171,6 +173,8 @@ const useWeb3Functions = () => {
       })
     );
 
+    // console.log({prices})
+
     tokens[chain.id].forEach((token, index) => {
       dispatch(
         setTokenPrice({
@@ -178,6 +182,7 @@ const useWeb3Functions = () => {
           price: +formatUnits(prices[index], token.decimals),
         })
       );
+
     });
   };
 
@@ -228,6 +233,8 @@ const useWeb3Functions = () => {
 
       if (!presaleContract) return;
 
+      // console.log('Token address:', token.address);
+
       const { request } = await presaleContract.simulate.buyToken(
         [token.address || zeroAddress, amount],
         {
@@ -237,7 +244,9 @@ const useWeb3Functions = () => {
 
       hash = await walletClient.writeContract(request);
 
-      await publicClient.waitForTransactionReceipt({ hash });
+       const txReceipt = await publicClient.waitForTransactionReceipt({ hash });
+
+       // console.log(txReceipt.logs);
 
        const purchased_amount = await presaleContract.read.getTokenAmount([
          token.address || zeroAddress,
@@ -346,6 +355,7 @@ const useWeb3Functions = () => {
     format,
     buyToken,
     addTokenAsset,
+    fetchTokenPrices,
     fetchIntialData,
     unlockingTokens,
     fetchLockedBalance,
