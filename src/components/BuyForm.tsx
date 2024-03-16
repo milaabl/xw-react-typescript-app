@@ -1,9 +1,10 @@
 import { SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
-import config from "../config";
+import config, { chains } from "../config";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useAccount,
+  useConfig,
   useReadContract
   /*, useSwitchChain*/ 
 } from "wagmi";
@@ -12,15 +13,20 @@ import Loading from "./Loading";
 import { setCurrentChain } from "../store/presale";
 import { useTranslation } from "react-i18next";
 import { ReferralModal /*, ReferralModalTarget*/ } from "./ReferralModal";
-import { zeroAddress } from "viem";
+import { formatUnits, zeroAddress } from "viem";
 import { presaleAbi } from "../contracts/presaleABI";
 // import DownArrowIcon from "/src/assets/svg/down-arrow.svg";
 
 const BuyForm = () => {
   const { t } = useTranslation();
-  const { address: account, chain } = useAccount();
 
-  const [chainId] = useMemo(() => [chain?.id || 1], [chain]);
+  const clientConfig = useConfig();
+
+  const { address: account, chain, isConnected } = useAccount({
+    config: clientConfig
+  });
+
+  const [chainId] = useMemo(() => [chain?.id || chains[0].id], [chain]);
 
   // const { switchChain } = useSwitchChain();
   const dispatch = useDispatch();
@@ -62,8 +68,6 @@ const BuyForm = () => {
   } = useWeb3Functions();
 
   const { open } = useWeb3Modal(); 
-
-  const { address, isConnected } = useAccount();
 
   /*const tokenPrice = useMemo(
     () => tokenPrices[config.displayPrice[chainId]],
@@ -145,7 +149,8 @@ const BuyForm = () => {
     functionName: 'buyersDetails',
     query: {
       enabled: true,
-      gcTime: 5 * 1000 // 5s
+      gcTime: 5 * 1000, // 5s,
+      refetchInterval: 5 * 1000, // 5s
     }
   })
 
@@ -169,11 +174,11 @@ const BuyForm = () => {
   };
 
   useEffect(() => {
-    if (!address || !chain) return;
+    if (!account || !chain) return;
 
     fetchLockedBalance();
     fetchTokenBalances();
-  }, [tokens, address, chain, fromToken, fromValue]);
+  }, [tokens, account, chain, fromToken, fromValue]);
 
   useEffect(() => {
     if (!isConnected || !chain) return;
@@ -191,7 +196,7 @@ const BuyForm = () => {
         fetchLockedBalance()
       ]);
     })();
-  }, [address]);
+  }, [account]);
 
   return (
     <div className="relative mx-auto w-full max-w-lg self-stretch rounded-3xl bg-blur  shadow-xl" >
@@ -337,10 +342,10 @@ const BuyForm = () => {
                   </div>
                 </div>
               </div>
-              {isConnected ? (
+              {account || isConnected ? (
                 <>
                   { boughtToken && boughtToken[0] && <p className="uppercase col-span-2 border-y py-4 text-center text-sm font-medium uppercase text-white">
-                    You bought {boughtToken[0].toLocaleString()} $
+                    You bought {formatNumber(+formatUnits(boughtToken[0], 18))} $
                     {saleToken[chainId].symbol}{" in total"}
                   </p> }
                   <p className="col-span-2 border-y py-4 text-center text-sm font-medium uppercase text-white">
@@ -385,7 +390,9 @@ const BuyForm = () => {
                   className="relative flex w-full items-center justify-center gap-2 rounded-lg bg-[#39FF14] py-3 px-6  btn-green transition-opacity duration-200 hover:opacity-75 disabled:cursor-not-allowed disabled:opacity-80 lg:text-xl"
                   disabled={loading}
                   type="button"
-                  onClick={() => {open(); window.gtag('event', 'ConnectButton', { event_category: 'button',
+                  onClick={() => {
+                    open();
+                    window.gtag('event', 'ConnectButton', { event_category: 'button',
                   event_label: 'connect'}) }}
                 >
                   {loading && (
@@ -434,7 +441,7 @@ const BuyForm = () => {
                 Win $500k
               </a>
             </div>
-            {isConnected ? (
+            {account || isConnected ? (
               <button
               className="flex items-center justify-center gap-5 rounded-xl border-2 border-dashed border-white/20 py-4 text-white/50 transition-all duration-200 hover:border-solid"
               type="button"

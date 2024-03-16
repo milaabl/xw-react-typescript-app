@@ -11,6 +11,7 @@ import { setUser } from "./store/wallet";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query' ;
 import { createWeb3Modal } from "@web3modal/wagmi/react";
 import { defaultWagmiConfig } from "@web3modal/wagmi";
+import { walletConnect } from "@wagmi/connectors";
 
 
 const queryClient = new QueryClient();
@@ -24,22 +25,23 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/37784886']
 }
 
-const config = defaultWagmiConfig({
+export const config = defaultWagmiConfig({
   chains: customChains,
   projectId,
-  metadata
+  metadata,
+  connectors: [walletConnect({ projectId, metadata, showQrModal: false })]
 })
 
 // 3. Create modal
 createWeb3Modal({
   wagmiConfig: config,
   projectId,
-  enableAnalytics: true, // Optional - defaults to your Cloud configuration
-  enableOnramp: true // Optional - false as default
+  enableAnalytics: false, // Optional - defaults to your Cloud configuration
+  enableOnramp: false // Optional - false as default
 })
 
 function App() {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected } = useAccount({config});
   const dispatch = useDispatch();
 
   useEffect(() => {
