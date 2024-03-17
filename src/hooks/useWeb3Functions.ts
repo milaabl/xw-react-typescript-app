@@ -9,6 +9,7 @@ import {
 } from "../store/presale";
 import { useEffect, useMemo, useState } from "react";
 import {
+  BaseError,
   useAccount,
   useConfig,
   usePublicClient,
@@ -24,17 +25,18 @@ import {
   http,
   parseUnits,
   zeroAddress,
-  erc20Abi
+  erc20Abi,
+  ContractFunctionExecutionError
 } from "viem";
 import { presaleAbi } from "../contracts/presaleABI";
 import { storeReferralTransaction, storeTransaction } from "../utils/apis";
 import dayjs from "dayjs";
 
-const publicClient = createPublicClient({
+/*const publicClient = createPublicClient({
   chain: config.chains[0],
   transport: http(),
   batch: { multicall: true },
-});
+});*/
 
 const useWeb3Functions = () => {
   const network = useConfig();
@@ -48,16 +50,17 @@ const useWeb3Functions = () => {
   const dispatch = useDispatch();
   const provider = usePublicClient();
   const { data: walletClient } = useWalletClient();
+  const publicClient = usePublicClient();
   const { address } = useAccount();
 
   const presaleContract = useMemo(
     () =>
-      walletClient && getContract({
+      publicClient && getContract({
         address: config.presaleContract[chain.id],
         abi: presaleAbi,
-        client: walletClient
+        client: { wallet: walletClient, public: publicClient},
       }),
-    [address, walletClient, chain.id]
+    [address, publicClient, walletClient, chain.id]
   );
 
   useEffect(() => {
@@ -124,7 +127,7 @@ const useWeb3Functions = () => {
   };
 
   const fetchTokenBalances = async () => {
-    if (!address || !tokens[chain.id]) return;
+    if (!address || !tokens[chain.id] || !publicClient) return;
 
     const allTokens = [...tokens[chain.id], config.saleToken[chain.id]];
 
@@ -192,7 +195,7 @@ const useWeb3Functions = () => {
     spender: Address,
     amount: bigint
   ) => {
-    if (!token.address || !walletClient) return;
+    if (!publicClient || !token.address || !walletClient) return;
 
     const tokenContract = getContract({
       address: token.address,
@@ -204,7 +207,7 @@ const useWeb3Functions = () => {
     if (allowance < amount) {
       const hash = await tokenContract.write.approve([
         spender,
-        parseUnits("9999999999999999999999999999", token.decimals),
+        amount,
       ]);
       await publicClient.waitForTransactionReceipt({ hash });
       toast.success("Spend approved");
@@ -215,7 +218,7 @@ const useWeb3Functions = () => {
     let success = false;
     let hash;
 
-    if (!walletClient || !address) return { success, txHash: hash };
+    if (!publicClient || !walletClient || !address) return { success, txHash: hash };
 
     setLoading(true);
 
@@ -281,13 +284,15 @@ const useWeb3Functions = () => {
       );
 
       success = true;
-    } catch (error: any) {
-      toast.error(
-        error?.walk?.()?.shortMessage ||
-          error?.walk?.()?.message ||
-          error?.message ||
-          "Signing failed, please try again!"
-      );
+    } catch (error: unknown) {
+      if (error instanceof ContractFunctionExecutionError) {
+        toast.error(
+          String(error?.walk?.()?.cause) ||
+            error?.walk?.()?.message ||
+            error?.message ||
+            "Signing failed, please try again!"
+        );
+      }
     }
 
     setLoading(false);
@@ -296,7 +301,7 @@ const useWeb3Functions = () => {
   };
 
   const unlockingTokens = async () => {
-    if (!walletClient || !presaleContract) return;
+    if (!publicClient || !walletClient || !presaleContract) return;
 
     setLoading(true);
 
@@ -308,13 +313,15 @@ const useWeb3Functions = () => {
       fetchLockedBalance();
 
       toast.success("Tokens unlocked successfully");
-    } catch (error: any) {
-      toast.error(
-        error?.walk?.()?.shortMessage ||
-          error?.walk?.()?.message ||
-          error?.message ||
-          "Signing failed, please try again!"
-      );
+    } catch (error: unknown) {
+      if (error instanceof ContractFunctionExecutionError) {
+        toast.error(
+          String(error?.walk?.()?.cause) ||
+            error?.walk?.()?.message ||
+            error?.message ||
+            "Signing failed, please try again!"
+        );
+      }
     }
 
     setLoading(false);
@@ -324,19 +331,16 @@ const useWeb3Functions = () => {
     if (!token.address || !walletClient) return;
     try {
       await walletClient.watchAsset({
-        method: "wallet_watchAsset",
-        params: {
-          type: "ERC20",
-          options: {
+        type: "ERC20",
+        options: {
             address: token.address,
             symbol: token.symbol,
             decimals: token.decimals ?? 18,
             image: token.image.includes("http")
               ? token.image
               : `${window.location.origin}${token.image}`,
-          },
-        },
-      } as any);
+          }
+      });
       toast.success("Token imported to metamask successfully");
     } catch (e) {
       toast.error("Token import failed");

@@ -68,13 +68,13 @@ function App() {
     }
   };
   useEffect(() => {
-    let newEvent: any;
+    let newEvent: MouseEvent;
 
-    window.addEventListener("mousemove", (event: any) => {
-      newEvent = new event.constructor(event.type, event);
+    window.addEventListener("mousemove", (event: MouseEvent) => {
+      newEvent = new MouseEvent(event.type, event);
     });
 
-    document.addEventListener("mousemove", (event: any) => {
+    document.addEventListener("mousemove", (event: MouseEvent) => {
       if (event.isTrusted && newEvent) {
         document.getElementById("webgl-fluid")?.dispatchEvent(newEvent);
       }

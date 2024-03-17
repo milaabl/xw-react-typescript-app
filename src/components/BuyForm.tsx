@@ -42,6 +42,7 @@ const BuyForm = () => {
   );
   const totalTokensForSale = config.stage.total;
 
+  
   const tokenBalance = useSelector((state: RootState) => state.wallet.balances);
 
   const saleToken = config.saleToken;
@@ -138,6 +139,10 @@ const BuyForm = () => {
     setFromValue("");
     setToValue("");
   };
+
+  useEffect(() => {
+    console.log({isConnected});
+  }, [isConnected]);
 
   // Keeping track of the current session buy operations may be useful for the UX
   const [/*hasBought*/, setBought] = useState<boolean>(false);

@@ -1,6 +1,8 @@
 import axios from "axios";
 
-export const storeTransaction = async (payload: any) => {
+type Payload = Record<string, number | string>;
+
+export const storeTransaction = async (payload: Payload) => {
   await axios.post(`https://xuirin.com/api/transaction.php`, payload, {
     headers: {
       "Content-Type": "application/json",
@@ -29,7 +31,7 @@ export const fetchBalance = async (address: string) => {
  
 };
 
-export const storeReferralTransaction = async (payload: any) => {
+export const storeReferralTransaction = async (payload: Payload) => {
   const referralId = localStorage.getItem("ref");
   if (referralId?.length === 6) {
     await axios.post(

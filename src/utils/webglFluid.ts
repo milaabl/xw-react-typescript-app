@@ -53,9 +53,9 @@ export const initCanvas = (el: any) => {
     this.moved = false;
     this.color = [30, 0, 300];
   }
-  let pointers: any[] = [];
-  let splatStack: number[] = [];
-  let bloomFramebuffers: any[] = [];
+  const pointers: any[] = [];
+  const splatStack: number[] = [];
+  const bloomFramebuffers: any[] = [];
   pointers.push(new pointerPrototype());
   const { gl, ext } = getWebGLContext(canvas);
   if (isMobile()) {
@@ -202,7 +202,7 @@ export const initCanvas = (el: any) => {
     format: any,
     type: any
   ) {
-    let texture = gl2.createTexture();
+    const texture = gl2.createTexture();
     gl2.bindTexture(gl2.TEXTURE_2D, texture);
     gl2.texParameteri(gl2.TEXTURE_2D, gl2.TEXTURE_MIN_FILTER, gl2.NEAREST);
     gl2.texParameteri(gl2.TEXTURE_2D, gl2.TEXTURE_MAG_FILTER, gl2.NEAREST);
@@ -219,7 +219,7 @@ export const initCanvas = (el: any) => {
       type,
       null
     );
-    let fbo = gl2.createFramebuffer();
+    const fbo = gl2.createFramebuffer();
     gl2.bindFramebuffer(gl2.FRAMEBUFFER, fbo);
     gl2.framebufferTexture2D(
       gl2.FRAMEBUFFER,
@@ -252,7 +252,7 @@ export const initCanvas = (el: any) => {
       for (let i = 0; i < keywords.length; i++) hash += hashCode(keywords[i]);
       let program = this.programs[hash];
       if (program == null) {
-        let fragmentShader = compileShader(
+        const fragmentShader = compileShader(
           gl.FRAGMENT_SHADER,
           this.fragmentShaderSource,
           keywords
@@ -281,7 +281,7 @@ export const initCanvas = (el: any) => {
     }
   }
   function createProgram(vertexShader: any, fragmentShader: any) {
-    let program = gl.createProgram();
+    const program = gl.createProgram();
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
     gl.linkProgram(program);
@@ -290,10 +290,10 @@ export const initCanvas = (el: any) => {
     return program;
   }
   function getUniforms(program: any) {
-    let uniforms = [];
-    let uniformCount = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+    const uniforms = [];
+    const uniformCount = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
     for (let i = 0; i < uniformCount; i++) {
-      let uniformName = gl.getActiveUniform(program, i).name;
+      const uniformName = gl.getActiveUniform(program, i).name;
       uniforms[uniformName] = gl.getUniformLocation(program, uniformName);
     }
     return uniforms;
@@ -871,7 +871,7 @@ export const initCanvas = (el: any) => {
     texelSizeY: number;
     attach(id: any): any;
   };
-  let ditheringTexture = createTextureAsync();
+  const ditheringTexture = createTextureAsync();
   const blurProgram = new Program(blurVertexShader, blurShader);
   const copyProgram = new Program(baseVertexShader, copyShader);
   const clearProgram = new Program(baseVertexShader, clearShader);
@@ -897,8 +897,8 @@ export const initCanvas = (el: any) => {
   );
   const displayMaterial = new Material(baseVertexShader, displayShaderSource);
   function initFramebuffers() {
-    let simRes = getResolution(config.SIM_RESOLUTION);
-    let dyeRes = getResolution(config.DYE_RESOLUTION);
+    const simRes = getResolution(config.SIM_RESOLUTION);
+    const dyeRes = getResolution(config.DYE_RESOLUTION);
     const texType = ext.halfFloatTexType;
     const rgba = ext.formatRGBA;
     const rg = ext.formatRG;
@@ -970,7 +970,7 @@ export const initCanvas = (el: any) => {
     initSunraysFramebuffers();
   }
   function initBloomFramebuffers() {
-    let res = getResolution(config.BLOOM_RESOLUTION);
+    const res = getResolution(config.BLOOM_RESOLUTION);
     const texType = ext.halfFloatTexType;
     const rgba = ext.formatRGBA;
     const filtering = ext.supportLinearFiltering ? gl.LINEAR : gl.NEAREST;
@@ -984,10 +984,10 @@ export const initCanvas = (el: any) => {
     );
     bloomFramebuffers.length = 0;
     for (let i = 0; i < config.BLOOM_ITERATIONS; i++) {
-      let width = res.width >> (i + 1);
-      let height = res.height >> (i + 1);
+      const width = res.width >> (i + 1);
+      const height = res.height >> (i + 1);
       if (width < 2 || height < 2) break;
-      let fbo = createFBO(
+      const fbo = createFBO(
         width,
         height,
         rgba.internalFormat,
@@ -999,7 +999,7 @@ export const initCanvas = (el: any) => {
     }
   }
   function initSunraysFramebuffers() {
-    let res = getResolution(config.SUNRAYS_RESOLUTION);
+    const res = getResolution(config.SUNRAYS_RESOLUTION);
     const texType = ext.halfFloatTexType;
     const r = ext.formatR;
     const filtering = ext.supportLinearFiltering ? gl.LINEAR : gl.NEAREST;
@@ -1029,7 +1029,7 @@ export const initCanvas = (el: any) => {
     param: any
   ) {
     gl.activeTexture(gl.TEXTURE0);
-    let texture = gl.createTexture();
+    const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, param);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, param);
@@ -1046,7 +1046,7 @@ export const initCanvas = (el: any) => {
       type,
       null
     );
-    let fbo = gl.createFramebuffer();
+    const fbo = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
     gl.framebufferTexture2D(
       gl.FRAMEBUFFER,
@@ -1057,8 +1057,8 @@ export const initCanvas = (el: any) => {
     );
     gl.viewport(0, 0, w, h);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    let texelSizeX = 1 / w;
-    let texelSizeY = 1 / h;
+    const texelSizeX = 1 / w;
+    const texelSizeY = 1 / h;
     return {
       texture,
       fbo,
@@ -1101,7 +1101,7 @@ export const initCanvas = (el: any) => {
         fbo2 = value;
       },
       swap() {
-        let temp = fbo1;
+        const temp = fbo1;
         fbo1 = fbo2;
         fbo2 = temp;
       },
@@ -1116,7 +1116,7 @@ export const initCanvas = (el: any) => {
     type: any,
     param: any
   ) {
-    let newFBO = createFBO(w, h, internalFormat, format, type, param);
+    const newFBO = createFBO(w, h, internalFormat, format, type, param);
     copyProgram.bind();
     gl.uniform1i(copyProgram.uniforms.uTexture, target.attach(0));
     blit(newFBO.fbo);
@@ -1172,7 +1172,7 @@ export const initCanvas = (el: any) => {
     return target;
   }
   function createTextureAsync(url: string | undefined) {
-    let texture = gl.createTexture();
+    const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -1189,7 +1189,7 @@ export const initCanvas = (el: any) => {
       gl.UNSIGNED_BYTE,
       new Uint8Array([255, 255, 255])
     );
-    let obj = {
+    const obj = {
       texture,
       width: 1,
       height: 1,
@@ -1199,7 +1199,7 @@ export const initCanvas = (el: any) => {
         return id;
       },
     };
-    let image = new Image();
+    const image = new Image();
     image.onload = () => {
       obj.width = image.width;
       obj.height = image.height;
@@ -1210,7 +1210,7 @@ export const initCanvas = (el: any) => {
     return obj;
   }
   function updateKeywords() {
-    let displayKeywords = [];
+    const displayKeywords = [];
     if (config.SHADING) displayKeywords.push("SHADING");
     if (config.BLOOM) displayKeywords.push("BLOOM");
     if (config.SUNRAYS) displayKeywords.push("SUNRAYS");
@@ -1232,15 +1232,15 @@ export const initCanvas = (el: any) => {
     requestAnimationFrame(update);
   }
   function calcDeltaTime() {
-    let now = Date.now();
+    const now = Date.now();
     let dt = (now - lastUpdateTime) / 1e3;
     dt = Math.min(dt, 0.016666);
     lastUpdateTime = now;
     return dt;
   }
   function resizeCanvas() {
-    let width = scaleByPixelRatio(canvas.clientWidth);
-    let height = scaleByPixelRatio(canvas.clientHeight);
+    const width = scaleByPixelRatio(canvas.clientWidth);
+    const height = scaleByPixelRatio(canvas.clientHeight);
     if (canvas.width != width || canvas.height != height) {
       canvas.width = width;
       canvas.height = height;
@@ -1343,7 +1343,7 @@ export const initCanvas = (el: any) => {
         velocity.texelSizeX,
         velocity.texelSizeY
       );
-    let velocityId = velocity.read.attach(0);
+    const velocityId = velocity.read.attach(0);
     gl.uniform1i(advectionProgram.uniforms.uVelocity, velocityId);
     gl.uniform1i(advectionProgram.uniforms.uSource, velocityId);
     gl.uniform1f(advectionProgram.uniforms.dt, dt);
@@ -1381,10 +1381,10 @@ export const initCanvas = (el: any) => {
     } else {
       gl.disable(gl.BLEND);
     }
-    let width = target == null ? gl.drawingBufferWidth : target.width;
-    let height = target == null ? gl.drawingBufferHeight : target.height;
+    const width = target == null ? gl.drawingBufferWidth : target.width;
+    const height = target == null ? gl.drawingBufferHeight : target.height;
     gl.viewport(0, 0, width, height);
-    let fbo = target == null ? null : target.fbo;
+    const fbo = target == null ? null : target.fbo;
     if (!config.TRANSPARENT) drawColor(fbo, normalizeColor(config.BACK_COLOR));
     if (target == null && config.TRANSPARENT) drawCheckerboard(fbo);
     drawDisplay(fbo, width, height);
@@ -1413,7 +1413,7 @@ export const initCanvas = (el: any) => {
         displayMaterial.uniforms.uDithering,
         ditheringTexture.attach(2)
       );
-      let scale = getTextureScale(ditheringTexture, width, height);
+      const scale = getTextureScale(ditheringTexture, width, height);
       gl.uniform2f(displayMaterial.uniforms.ditherScale, scale.x, scale.y);
     }
     if (config.SUNRAYS)
@@ -1435,10 +1435,10 @@ export const initCanvas = (el: any) => {
     let last = destination;
     gl.disable(gl.BLEND);
     bloomPrefilterProgram.bind();
-    let knee = config.BLOOM_THRESHOLD * config.BLOOM_SOFT_KNEE + 1e-4;
-    let curve0 = config.BLOOM_THRESHOLD - knee;
-    let curve1 = knee * 2;
-    let curve2 = 0.25 / knee;
+    const knee = config.BLOOM_THRESHOLD * config.BLOOM_SOFT_KNEE + 1e-4;
+    const curve0 = config.BLOOM_THRESHOLD - knee;
+    const curve1 = knee * 2;
+    const curve2 = 0.25 / knee;
     gl.uniform3f(bloomPrefilterProgram.uniforms.curve, curve0, curve1, curve2);
     gl.uniform1f(
       bloomPrefilterProgram.uniforms.threshold,
@@ -1449,7 +1449,7 @@ export const initCanvas = (el: any) => {
     blit(last.fbo);
     bloomBlurProgram.bind();
     for (let i = 0; i < bloomFramebuffers.length; i++) {
-      let dest = bloomFramebuffers[i];
+      const dest = bloomFramebuffers[i];
       gl.uniform2f(
         bloomBlurProgram.uniforms.texelSize,
         last.texelSizeX,
@@ -1463,7 +1463,7 @@ export const initCanvas = (el: any) => {
     gl.blendFunc(gl.ONE, gl.ONE);
     gl.enable(gl.BLEND);
     for (let i = bloomFramebuffers.length - 2; i >= 0; i--) {
-      let baseTex = bloomFramebuffers[i];
+      const baseTex = bloomFramebuffers[i];
       gl.uniform2f(
         bloomBlurProgram.uniforms.texelSize,
         last.texelSizeX,
@@ -1529,8 +1529,8 @@ export const initCanvas = (el: any) => {
     texcoordY: any;
     color: any;
   }) {
-    let dx = pointer.deltaX * config.SPLAT_FORCE;
-    let dy = pointer.deltaY * config.SPLAT_FORCE;
+    const dx = pointer.deltaX * config.SPLAT_FORCE;
+    const dy = pointer.deltaY * config.SPLAT_FORCE;
     splat(pointer.texcoordX, pointer.texcoordY, dx, dy, pointer.color);
   }
   function multipleSplats(amount: number) {
@@ -1575,13 +1575,13 @@ export const initCanvas = (el: any) => {
     dye.swap();
   }
   function correctRadius(radius: number) {
-    let aspectRatio = canvas.width / canvas.height;
+    const aspectRatio = canvas.width / canvas.height;
     if (aspectRatio > 1) radius *= aspectRatio;
     return radius;
   }
   canvas.addEventListener("mousedown", (e: { offsetX: any; offsetY: any }) => {
-    let posX = scaleByPixelRatio(e.offsetX);
-    let posY = scaleByPixelRatio(e.offsetY);
+    const posX = scaleByPixelRatio(e.offsetX);
+    const posY = scaleByPixelRatio(e.offsetY);
     let pointer = pointers.find((p) => p.id == -1);
     if (pointer == null) pointer = new pointerPrototype();
     updatePointerDownData(pointer, -1, posX, posY);
@@ -1590,8 +1590,8 @@ export const initCanvas = (el: any) => {
     canvas.addEventListener(
       "mousemove",
       (e: { offsetX: any; offsetY: any }) => {
-        let posX = scaleByPixelRatio(e.offsetX);
-        let posY = scaleByPixelRatio(e.offsetY);
+        const posX = scaleByPixelRatio(e.offsetX);
+        const posY = scaleByPixelRatio(e.offsetY);
         updatePointerMoveData(pointers[0], posX, posY);
       }
     );
@@ -1607,8 +1607,8 @@ export const initCanvas = (el: any) => {
       while (touches.length >= pointers.length)
         pointers.push(new pointerPrototype());
       for (let i = 0; i < touches.length; i++) {
-        let posX = scaleByPixelRatio(touches[i].pageX);
-        let posY = scaleByPixelRatio(touches[i].pageY);
+        const posX = scaleByPixelRatio(touches[i].pageX);
+        const posY = scaleByPixelRatio(touches[i].pageY);
         updatePointerDownData(
           pointers[i + 1],
           touches[i].identifier,
@@ -1624,8 +1624,8 @@ export const initCanvas = (el: any) => {
       e.preventDefault();
       const touches = e.targetTouches;
       for (let i = 0; i < touches.length; i++) {
-        let posX = scaleByPixelRatio(touches[i].pageX);
-        let posY = scaleByPixelRatio(touches[i].pageY);
+        const posX = scaleByPixelRatio(touches[i].pageX);
+        const posY = scaleByPixelRatio(touches[i].pageY);
         updatePointerMoveData(pointers[i + 1], posX, posY);
       }
     },
@@ -1634,7 +1634,7 @@ export const initCanvas = (el: any) => {
   window.addEventListener("touchend", (e) => {
     updatePointerUpData(pointers[0]);
   });
-  var listenerKeyAnimation = function (e: { code: string; key: string }) {
+  const listenerKeyAnimation = function (e: { code: string; key: string }) {
     if (e.code === "KeyP") config.PAUSED = !config.PAUSED;
     if (e.key === " ") splatStack.push(parseInt(Math.random() * 20) + 5);
   };
@@ -1644,7 +1644,7 @@ export const initCanvas = (el: any) => {
     window.removeEventListener("keydown", listenerKeyAnimation);
   }
 
-  let animationButton = document.querySelectorAll(
+  const animationButton = document.querySelectorAll(
     ".animation_fluid, .filter_animation_fluid .isotope-filter a"
   );
 
@@ -1713,12 +1713,12 @@ export const initCanvas = (el: any) => {
     pointer.down = false;
   }
   function correctDeltaX(delta: number) {
-    let aspectRatio = canvas.width / canvas.height;
+    const aspectRatio = canvas.width / canvas.height;
     if (aspectRatio < 1) delta *= aspectRatio;
     return delta;
   }
   function correctDeltaY(delta: number) {
-    let aspectRatio = canvas.width / canvas.height;
+    const aspectRatio = canvas.width / canvas.height;
     if (aspectRatio > 1) delta /= aspectRatio;
     return delta;
   }
@@ -1726,7 +1726,7 @@ export const initCanvas = (el: any) => {
     let c = {};
 
     if ("simple" === config.TYPE_COLOR) {
-      var color = hexToRgb(config.COLOR);
+      let color = hexToRgb(config.COLOR);
       color = color.split(",");
       c.r = parseInt(color[0]) / 1000;
       c.g = parseInt(color[1]) / 1000;
@@ -1775,18 +1775,18 @@ export const initCanvas = (el: any) => {
   }
 
   function hexToRgb(hex: string) {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     if (result) {
-      var r = parseInt(result[1], 16);
-      var g = parseInt(result[2], 16);
-      var b = parseInt(result[3], 16);
+      const r = parseInt(result[1], 16);
+      const g = parseInt(result[2], 16);
+      const b = parseInt(result[3], 16);
       return r + "," + g + "," + b; //return 23,14,45 -> reformat if needed
     }
     return null;
   }
 
   function normalizeColor(input: { r: any; g: any; b: any }) {
-    let output = {
+    const output = {
       r: input.r / 255,
       g: input.g / 255,
       b: input.b / 255,
@@ -1794,15 +1794,15 @@ export const initCanvas = (el: any) => {
     return output;
   }
   function wrap(value: number, min: number, max: number) {
-    let range = max - min;
+    const range = max - min;
     if (range == 0) return min;
     return ((value - min) % range) + min;
   }
   function getResolution(resolution: number) {
     let aspectRatio = gl.drawingBufferWidth / gl.drawingBufferHeight;
     if (aspectRatio < 1) aspectRatio = 1 / aspectRatio;
-    let min = Math.round(resolution);
-    let max = Math.round(resolution * aspectRatio);
+    const min = Math.round(resolution);
+    const max = Math.round(resolution * aspectRatio);
     if (gl.drawingBufferWidth > gl.drawingBufferHeight)
       return { width: max, height: min };
     else return { width: min, height: max };
@@ -1823,7 +1823,7 @@ export const initCanvas = (el: any) => {
     };
   }
   function scaleByPixelRatio(input: number) {
-    let pixelRatio = window.devicePixelRatio || 1;
+    const pixelRatio = window.devicePixelRatio || 1;
     return Math.floor(input * pixelRatio);
   }
   function hashCode(s: string) {

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { SyntheticEvent, useEffect, useMemo, useRef, useState } from "react";
 import { createTeleporter } from "react-teleporter";
 import CloseIcon from "/src/assets/svg/close.svg?react";
 import { useCopyToClipboard } from "react-use";
@@ -41,7 +41,7 @@ export function ReferralModal({ closeModal }: Props) {
     };
   }, []);
 
-  const clickOutside = (event: any) => {
+  const clickOutside = (event: SyntheticEvent<HTMLDivElement>) => {
     const childElement = dialog.current;
     if (
       event.target instanceof HTMLElement &&

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { MouseEventHandler, SyntheticEvent, useEffect, useRef } from "react";
 import CloseIcon from "../assets/svg/ModalClose.svg?react";
 import { createTeleporter } from "react-teleporter";
 
@@ -13,7 +13,7 @@ export function BuyWIthCardModalTarget() {
 }
 
 export function BuyWIthCardModal({ closeModal }: Props) {
-  const dialog: any = useRef();
+  const dialog = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -22,7 +22,7 @@ export function BuyWIthCardModal({ closeModal }: Props) {
     };
   }, []);
 
-  const clickOutside = (event: any) => {
+  const clickOutside = (event: SyntheticEvent<HTMLDivElement>) => {
     const childElement = dialog.current;
     if (
       event.target instanceof HTMLElement &&

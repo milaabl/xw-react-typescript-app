@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { SyntheticEvent, useEffect, useMemo, useRef } from "react";
 import { createTeleporter } from "react-teleporter";
 import CloseIcon from "../assets/svg/close.svg?react";
 import { useSelector } from "react-redux";
@@ -34,7 +34,7 @@ export function PurchaseModal({ closeModal, transactionHash }: Props) {
     };
   }, []);
 
-  const clickOutside = (event: any) => {
+  const clickOutside = (event: SyntheticEvent<HTMLDivElement>) => {
     const childElement = dialog.current;
     if (
       event.target instanceof HTMLElement &&

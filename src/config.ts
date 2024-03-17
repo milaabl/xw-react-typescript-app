@@ -1,7 +1,7 @@
 import { Chain, goerli, mainnet as mainnetOriginal } from "viem/chains";
 
 // edit to make it work with a local Hardhat Ethereum fork
-const mainnet = mainnetOriginal; // use the following code for local fork testing: { ...mainnetOriginal, id: 31337, rpcUrls: { default: { http: [`http://127.0.0.1:8545` ] } } } satisfies Chain;
+const mainnet = { ...mainnetOriginal, id: 31337, rpcUrls: { default: { http: [`http://127.0.0.1:8545` ] } } } satisfies Chain; // mainnetOriginal; // use the following code for local fork testing: 
 
 
 export const chains = [mainnet, goerli] as const;
