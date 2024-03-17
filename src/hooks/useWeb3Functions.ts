@@ -26,7 +26,9 @@ import {
   parseUnits,
   zeroAddress,
   erc20Abi,
-  ContractFunctionExecutionError
+  ContractFunctionExecutionError,
+  createPublicClient,
+  http
 } from "viem";
 import { presaleAbi } from "../contracts/presaleABI";
 import { storeReferralTransaction, storeTransaction } from "../utils/apis";
@@ -38,6 +40,11 @@ import { customChains } from "../utils/wagmi";
   transport: http(),
   batch: { multicall: true },
 });*/
+
+const publicClient = createPublicClient({ 
+  chain: customChains[0],
+  transport: http()
+})
 
 const useWeb3Functions = () => {
   const network = useConfig();
@@ -51,32 +58,29 @@ const useWeb3Functions = () => {
   const dispatch = useDispatch();
   const provider = usePublicClient();
   const { data: walletClient } = useWalletClient();
-  const publicClient = usePublicClient();
+
+  // const wagmiConfig = useConfig();
+
+  /*const publicClient = usePublicClient({
+    chainId: chain.id,
+    config: wagmiConfig
+  });*/
+
   const { address } = useAccount();
-
-  const presaleContractConfig = {
-    address: config.presaleContract[chain.id],
-    abi: presaleAbi,
-  };
-
-  const presaleContractReadOnly = useMemo(() =>
-  (publicClient) && getContract({
-    ...presaleContractConfig,
-    client: publicClient
-  }), [publicClient, chain.id]);
 
   const presaleContract = useMemo(
     () =>
-      (walletClient) && getContract({
-        ...presaleContractConfig,
-        client: walletClient // { wallet: walletClient, public: publicClient},
+      getContract({
+        address: config.presaleContract[chain.id],
+        abi: presaleAbi,
+        client: walletClient?.account ? walletClient : publicClient,
       }),
-    [address, walletClient, chain.id]
+    [address, publicClient, walletClient, chain.id]
   );
 
   useEffect(() => {
     fetchIntialData();
-  }, [presaleContractReadOnly, presaleContract]);
+  }, [presaleContract]);
 
   const fetchIntialData = async () => {
     // console.log('Fethcing initial data...')
@@ -85,7 +89,7 @@ const useWeb3Functions = () => {
     // console.log(presaleContract)
 
     const [saleStatus] = await Promise.all([
-      (presaleContractReadOnly || presaleContract)?.read.saleStatus(),
+      presaleContract?.read.saleStatus(),
       fetchTotalTokensSold(),
       fetchTokenPrices(),
     ]);
@@ -101,7 +105,7 @@ const useWeb3Functions = () => {
     let extraAmount = 0;
     let incrase = 0;
 
-    const totalTokensSold = await (presaleContractReadOnly || presaleContract).read.totalTokensSold();
+    const totalTokensSold = await presaleContract.read.totalTokensSold();
 
     try {
       const resposne = await fetch("/settings.json");
@@ -125,8 +129,8 @@ const useWeb3Functions = () => {
 
     const { symbol, decimals } = config.saleToken[chain.id];
     const [buyersDetails, remainingRewards] = await Promise.all([
-      (presaleContractReadOnly || presaleContract)?.read.buyersDetails([address]),
-      (presaleContractReadOnly || presaleContract)?.read.getBuyerReward([address]),
+      presaleContract?.read.buyersDetails([address]),
+      presaleContract?.read.getBuyerReward([address]),
     ]);
 
     if (!buyersDetails || !remainingRewards) return;
@@ -180,9 +184,9 @@ const useWeb3Functions = () => {
     const prices = await Promise.all(
       tokens[chain.id].map((token) => {
         if (token.address) {
-          return (presaleContractReadOnly || presaleContract).read.tokenPrices([token.address]);
+          return presaleContract.read.tokenPrices([token.address]);
         } else {
-          return (presaleContractReadOnly || presaleContract).read.rate();
+          return presaleContract.read.rate();
         }
       })
     );
@@ -251,6 +255,7 @@ const useWeb3Functions = () => {
 
       const { request } = await presaleContract.simulate.buyToken(
         [token.address || zeroAddress, amount],
+        // @ts-ignore
         {
           value: token.address ? 0n : amount,
         }
@@ -262,7 +267,7 @@ const useWeb3Functions = () => {
 
        // console.log(txReceipt.logs);
 
-       const purchased_amount = await (presaleContractReadOnly || presaleContract).read.getTokenAmount([
+       const purchased_amount = await presaleContract.read.getTokenAmount([
          token.address || zeroAddress,
          amount,
        ]);
@@ -300,7 +305,6 @@ const useWeb3Functions = () => {
       if (error instanceof ContractFunctionExecutionError) {
         toast.error(
           String(error?.walk?.()?.cause) ||
-            error?.walk?.()?.shortMessage ||
             error?.message ||
             "Signing failed, please try again!"
         );
@@ -318,6 +322,7 @@ const useWeb3Functions = () => {
     setLoading(true);
 
     try {
+      // @ts-ignore
       const { request } = await presaleContract.simulate.unlockToken();
       const hash = await walletClient.writeContract(request);
       await publicClient.waitForTransactionReceipt({ hash });
@@ -329,7 +334,7 @@ const useWeb3Functions = () => {
       console.log(error);
       if (error instanceof ContractFunctionExecutionError) {
         toast.error(
-          String(error?.walk?.()?.shortMessage) ||
+          String(error?.walk?.()?.cause) ||
             error?.walk?.()?.message ||
             error?.message ||
             "Signing failed, please try again!"
