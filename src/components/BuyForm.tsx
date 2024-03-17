@@ -17,16 +17,8 @@ import { formatUnits, zeroAddress } from "viem";
 import { presaleAbi } from "../contracts/presaleABI";
 // import DownArrowIcon from "/src/assets/svg/down-arrow.svg";
 
-export const useIsMounted = () => {
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
-  return mounted
-}
-
 const BuyForm = () => {
   const { t } = useTranslation();
-
-  const isMounted = useIsMounted();
 
   const clientConfig = useConfig();
 
@@ -211,7 +203,7 @@ const BuyForm = () => {
     })();
   }, [account]);
 
-  return !isMounted ? null : (
+  return (
     <div className="relative mx-auto w-full max-w-lg self-stretch rounded-3xl bg-blur  shadow-xl" >
       {loading && <Loading className="z-50 rounded-3xl" />}
       <div className="flex flex-col items-center justify-center rounded-t-3xl px-6 py-4 text-white">
