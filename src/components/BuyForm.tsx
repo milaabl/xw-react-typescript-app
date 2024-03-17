@@ -1,4 +1,4 @@
-import { SyntheticEvent, useEffect, useMemo, useState } from "react";
+import { /*SyntheticEvent,*/ useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
 import config, { chains } from "../config";
@@ -361,7 +361,7 @@ const BuyForm = () => {
                     className="relative flex w-full items-center justify-center gap-2 rounded-lg bg-[#FFD700] py-3 px-6 text-lg  btn-green transition-opacity duration-200 hover:opacity-75 disabled:cursor-not-allowed disabled:from-gray-400 disabled:opacity-80 lg:text-xl"
                     disabled={loading || insufficientBalance}
                     type="submit"
-                    onClick={(e: SyntheticEvent<HTMLButtonElement>)=>{ window.gtag('event', 'BuyClick', { event_category: 'button',
+                    onClick={(/*e: SyntheticEvent<HTMLButtonElement>*/)=>{ window.gtag('event', 'BuyClick', { event_category: 'button',
                     event_label: 'Buy'}
                     );
                     onSubmit(/*e*/);

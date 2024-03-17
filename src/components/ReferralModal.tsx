@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../store";
 
 type Props = {
-  closeModal: Function;
+  closeModal: () => void;
 };
 
 const ReferralModalTeleport = createTeleporter();
@@ -23,7 +23,7 @@ export function ReferralModal({ closeModal }: Props) {
     [user]
   );
   const [copyBtnText, setCopyBtnText] = useState("Copy link" as string);
-  const [_, copyText] = useCopyToClipboard();
+  const [/*_*/, copyText] = useCopyToClipboard();
 
   const copy = (text: string) => {
     copyText(text);

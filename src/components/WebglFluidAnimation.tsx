@@ -4,15 +4,15 @@ import { initCanvas } from "../utils/webglFluid";
 const WebglFluidAnimation = () => {
   useEffect(() => {
     const element = document.getElementById("webgl-fluid");
-    if (element) {
+    if (element instanceof HTMLCanvasElement) {
       initCanvas(element);
 
-      let newEvent: any;
-      window.addEventListener("mousemove", (event: any) => {
-        newEvent = new event.constructor(event.type, event);
+      let newEvent: MouseEvent;
+      window.addEventListener("mousemove", (event: MouseEvent) => {
+        newEvent = new MouseEvent(event.type, event);
       });
 
-      document.addEventListener("mousemove", (event: any) => {
+      document.addEventListener("mousemove", (event: MouseEvent) => {
         if (event.isTrusted && newEvent) {
           document.getElementById("wgl-webgl-fluid")?.dispatchEvent(newEvent);
         }

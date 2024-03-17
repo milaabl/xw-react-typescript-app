@@ -1,9 +1,9 @@
 import TwitterIcon from "../assets/svg/twitter.svg?react";
 import TelegramIcon from "../assets/svg/telegram.svg?react";
-import DiscordIcon from "../assets/svg/discord.svg?react";
-import LinkedinIcon from "../assets/svg/linkedin.svg?react";
-import YoutubeIcon from "../assets/svg/youtube.svg?react";
-import GithubIcon from "../assets/svg/github.svg?react";
+// import DiscordIcon from "../assets/svg/discord.svg?react";
+// import LinkedinIcon from "../assets/svg/linkedin.svg?react";
+// import YoutubeIcon from "../assets/svg/youtube.svg?react";
+// import GithubIcon from "../assets/svg/github.svg?react";
 import ArrowDownIcon from "../assets/svg/arrow-down.svg?react";
 import { useTranslation } from "react-i18next";
 import { languages } from "../i18n";
@@ -38,13 +38,14 @@ const socialLinks = [
 ];
 
 const Navbar = () => {
-  const { t, i18n } = useTranslation();
-  const navigationLinks = [
+  const { /*t,*/ i18n } = useTranslation();
+  /*const navigationLinks = [
     {
       name: t("home"),
       href: "#",
     },
-  ];
+  ];*/
+
   return (
     <div className="container px-4 lg:px-0">
       <div className="flex items-center justify-between py-6">

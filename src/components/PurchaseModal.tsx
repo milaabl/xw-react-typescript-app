@@ -6,7 +6,7 @@ import { RootState } from "../store";
 import config from "../config";
 import { useAccount } from "wagmi";
 type Props = {
-  closeModal: Function;
+  closeModal: () => void;
   transactionHash: string;
 };
 

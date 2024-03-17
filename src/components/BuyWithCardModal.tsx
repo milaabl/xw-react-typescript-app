@@ -1,9 +1,9 @@
-import { MouseEventHandler, SyntheticEvent, useEffect, useRef } from "react";
+import { /*MouseEventHandler,*/ SyntheticEvent, useEffect, useRef } from "react";
 import CloseIcon from "../assets/svg/ModalClose.svg?react";
 import { createTeleporter } from "react-teleporter";
 
 type Props = {
-  closeModal: Function;
+  closeModal: () => void;
 };
 
 const BuyWIthCardModalTeleport = createTeleporter();

@@ -9,20 +9,20 @@ import {
 } from "../store/presale";
 import { useEffect, useMemo, useState } from "react";
 import {
-  BaseError,
+  /*BaseError,*/
   useAccount,
   useConfig,
   usePublicClient,
   useWalletClient,
 } from "wagmi";
-import wallet, { setBalance } from "../store/wallet";
+import /*wallet,*/ { setBalance } from "../store/wallet";
 import { toast } from "react-toastify";
 
 import {
-  createPublicClient,
+  // createPublicClient,
   formatUnits,
   getContract,
-  http,
+  // http,
   parseUnits,
   zeroAddress,
   erc20Abi,
@@ -247,7 +247,7 @@ const useWeb3Functions = () => {
 
       hash = await walletClient.writeContract(request);
 
-       const txReceipt = await publicClient.waitForTransactionReceipt({ hash });
+       /*const txReceipt =*/ await publicClient.waitForTransactionReceipt({ hash });
 
        // console.log(txReceipt.logs);
 
