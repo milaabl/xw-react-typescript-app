@@ -2,10 +2,9 @@ import { /*SyntheticEvent,*/ useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
 import config, { chains } from "../config";
-// import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useAccount,
   useConfig,
-  useConnect,
+  // useConnect,
   useConnectors,
   useReadContract
   /*, useSwitchChain*/ 
@@ -17,7 +16,8 @@ import { useTranslation } from "react-i18next";
 import { ReferralModal /*, ReferralModalTarget*/ } from "./ReferralModal";
 import { formatUnits, zeroAddress } from "viem";
 import { presaleAbi } from "../contracts/presaleABI";
-import { customChains, wagmiClient } from "../utils/wagmi";
+// import { customChains, wagmiClient } from "../utils/wagmi";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
 // import DownArrowIcon from "/src/assets/svg/down-arrow.svg";
 
 const BuyForm = () => {
@@ -75,7 +75,7 @@ const BuyForm = () => {
 
   // const { open } = useWeb3Modal(); 
 
-  const {connect} = useConnect({config: wagmiClient});
+  const {open} = useWeb3Modal(); // useConnect({config: wagmiClient});
 
   /*const tokenPrice = useMemo(
     () => tokenPrices[config.displayPrice[chainId]],
@@ -185,7 +185,7 @@ const BuyForm = () => {
     }
   };
 
-  const open = () => connect({ chainId: 1, connector: connectors[0]});
+  // const open = () => connect({ chainId: 1, connector: connectors[0]});
 
   useEffect(() => {
     if (!account || !chain) return;
