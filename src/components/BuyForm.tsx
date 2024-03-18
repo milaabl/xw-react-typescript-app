@@ -2,9 +2,11 @@ import { /*SyntheticEvent,*/ useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
 import config, { chains } from "../config";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
+// import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useAccount,
   useConfig,
+  useConnect,
+  useConnectors,
   useReadContract
   /*, useSwitchChain*/ 
 } from "wagmi";
@@ -15,6 +17,7 @@ import { useTranslation } from "react-i18next";
 import { ReferralModal /*, ReferralModalTarget*/ } from "./ReferralModal";
 import { formatUnits, zeroAddress } from "viem";
 import { presaleAbi } from "../contracts/presaleABI";
+import { customChains, wagmiClient } from "../utils/wagmi";
 // import DownArrowIcon from "/src/assets/svg/down-arrow.svg";
 
 const BuyForm = () => {
@@ -42,6 +45,8 @@ const BuyForm = () => {
   );
   const totalTokensForSale = config.stage.total;
 
+  const connectors = useConnectors();
+
   
   const tokenBalance = useSelector((state: RootState) => state.wallet.balances);
 
@@ -68,7 +73,9 @@ const BuyForm = () => {
     loading,
   } = useWeb3Functions();
 
-  const { open } = useWeb3Modal(); 
+  // const { open } = useWeb3Modal(); 
+
+  const {connect} = useConnect({config: wagmiClient});
 
   /*const tokenPrice = useMemo(
     () => tokenPrices[config.displayPrice[chainId]],
@@ -177,6 +184,8 @@ const BuyForm = () => {
       console.log(error);
     }
   };
+
+  const open = () => connect({ chainId: 1, connector: connectors[0]});
 
   useEffect(() => {
     if (!account || !chain) return;

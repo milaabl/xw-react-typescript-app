@@ -9,8 +9,6 @@ export const wagmiClient = createConfig({
   chains,
   connectors: [injected({
     shimDisconnect: true
-  }), walletConnect({
-    projectId
   })],
   transports: {
     [chains[0].id]: http(),
