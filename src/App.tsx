@@ -1,15 +1,16 @@
 import { /*customChains,*/ projectId, wagmiClient } from "./utils/wagmi";
 // import { Web3Modal } from "@web3modal/react";
 import { ReferralModalTarget } from "./components/ReferralModal";
-import { fetchReferralCode } from "./utils/apis";
+// import { fetchReferralCode } from "./utils/apis";
 import { WagmiProvider, useAccount } from "wagmi";
-import { useDispatch } from "react-redux";
+// import { useDispatch } from "react-redux";
 import HeaderSection from "./components/sections/HeaderSection";
-import { useEffect } from "react";
+// import { useEffect } from "react";
 // import config from "./config";
-import { setUser } from "./store/wallet";
+// import { setUser } from "./store/wallet";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createWeb3Modal } from "@web3modal/wagmi/react";
+import { EffectsModule } from "./components/EffectsModule";
 // import { defaultWagmiConfig } from "@web3modal/wagmi";
 // import { walletConnect } from "@wagmi/connectors";
 
@@ -39,50 +40,11 @@ createWeb3Modal({
 });
 
 function App() {
-  const { address, isConnected } = useAccount({ config: wagmiClient });
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    const searchParams = new URLSearchParams(window?.location.search);
-    const referralId = searchParams.get("ref");
-    if (referralId?.length === 6) {
-      localStorage.setItem("ref", referralId);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!isConnected) return;
-
-    signIn();
-  }, [isConnected]);
-
-  const signIn = async () => {
-    try {
-      const { user } = await fetchReferralCode(address as string);
-      const ref_address = await fetchReferralCode(address as string);
-      dispatch(setUser({ ...user, ref_address: ref_address }));
-    } catch (e) {
-      console.log(e);
-    }
-  };
-  useEffect(() => {
-    let newEvent: MouseEvent;
-
-    window.addEventListener("mousemove", (event: MouseEvent) => {
-      newEvent = new MouseEvent(event.type, event);
-    });
-
-    document.addEventListener("mousemove", (event: MouseEvent) => {
-      if (event.isTrusted && newEvent) {
-        document.getElementById("webgl-fluid")?.dispatchEvent(newEvent);
-      }
-    });
-  }, []);
-
   return (
     <>
       <WagmiProvider config={wagmiClient}>
         <QueryClientProvider client={queryClient}>
+          <EffectsModule />
           <main id="main" className="flex min-h-screen flex-col">
             <HeaderSection />
             <ReferralModalTarget />

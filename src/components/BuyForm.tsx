@@ -23,11 +23,9 @@ import { useWeb3Modal } from "@web3modal/wagmi/react";
 const BuyForm = () => {
   const { t } = useTranslation();
 
-  const clientConfig = useConfig();
+  // const clientConfig = useConfig();
 
-  const { address: account, chain, isConnected } = useAccount({
-    config: clientConfig
-  });
+  const { address: account, chain, isConnected } = useAccount();
 
   const [chainId] = useMemo(() => [chain?.id || chains[0].id], [chain]);
 
@@ -45,7 +43,7 @@ const BuyForm = () => {
   );
   const totalTokensForSale = config.stage.total;
 
-  const connectors = useConnectors();
+  // const connectors = useConnectors();
 
   
   const tokenBalance = useSelector((state: RootState) => state.wallet.balances);
@@ -301,7 +299,7 @@ const BuyForm = () => {
                     min={0}
                     step={0.00001}
                     placeholder="0.0"
-                    value={fromValue}
+                    value={typeof fromValue === "number" && isNaN(fromValue) ? "" : fromValue}
                     onChange={fromValueChange}
                   />
                   <div className="flex items-center justify-center px-4">
@@ -344,7 +342,7 @@ const BuyForm = () => {
                     min={0}
                     step={0.00001}
                     placeholder="0.0"
-                    value={toValue}
+                    value={typeof toValue === "number" && isNaN(toValue) ? "" : toValue}
                     onChange={toValueChange}
                   />
                   <div className="flex items-center justify-center  px-4">

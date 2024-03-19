@@ -1,5 +1,5 @@
-import { createConfig, http } from "wagmi";
-import { /*injected,*/ walletConnect } from '@wagmi/connectors';
+// import { createConfig, http } from "wagmi";
+// import { /*injected,*/ walletConnect } from '@wagmi/connectors';
 
 import { chains } from '../config';
 import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
@@ -15,11 +15,16 @@ export const wagmiClient = defaultWagmiConfig({
       icons: ['/img/favicon.ico']
     },
   chains,
-  transports: {
+  /*transports: {
     [chains[0].id]: http(),
     [chains[1].id]: http(),
-  },
+  },*/
+  /*connectors: [walletConnect({
+    projectId
+  })]*/
 });
+
+console.log(wagmiClient)
 
 export const customChains = chains;
 
