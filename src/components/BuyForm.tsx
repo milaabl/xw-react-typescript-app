@@ -1,4 +1,4 @@
-import { /*SyntheticEvent,*/ useEffect, useMemo, useState } from "react";
+import { /*SyntheticEvent,*/ FormEvent, FormEventHandler, SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
 import config, { chains } from "../config";
@@ -246,7 +246,7 @@ const BuyForm = () => {
           <p className="my-2 text-xl font-bold">Unlocking your tokens</p>
         )}
       </div>
-      <form className="mb-4 flex flex-col gap-3 px-4">
+      <form onSubmit={(e: FormEvent<HTMLFormElement>) => e.preventDefault()} className="mb-4 flex flex-col gap-3 px-4">
         <div className="relative mt-2 mb-4 flex flex-col items-center justify-center">
           <hr className="absolute top-1 h-0.5 w-full bg-gray-400" />
           <span className="z-10 -mt-2 bg-[#42474B] px-4 font-bold text-white">
